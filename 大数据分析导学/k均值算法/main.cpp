@@ -28,8 +28,8 @@ double random_unint(unsigned int min, unsigned int max, unsigned int seed = 0)
 Point *ProduceRandom(int size) {
 	Point *random = new Point[size];
 	for (int i = 0; i < size; i++) {
-		random[i].x = random_unint(0, 100, (unsigned)time(NULL));
-		random[i].y = random_unint(0, 100, (unsigned)time(NULL));
+		random[i].x = random_unint(0, MAXSIZE, (unsigned)time(NULL));
+		random[i].y = random_unint(0, MAXSIZE, (unsigned)time(NULL));
 	}
 	for (int i = 0; i < size; i++) {
 		cout << random[i].x << "  " << random[i].y << endl;
@@ -41,7 +41,7 @@ Point* GetCenter(Point *point, int tag, int size) {
 	int cnt = 0;	//计数
 	double sum_x = 0, sum_y = 0;
 	for (int i = 0; i < size; i++) {
-		if (point[i].tag == 0) {
+		if (point[i].tag == tag) {
 			sum_x += point[i].x;
 			sum_y += point[i].y;
 			cnt++;
@@ -82,29 +82,32 @@ void Cluster(Point *pointset, int size) {
 			dist_0 < dist_1 ? pointset[i].tag = 0 : pointset[i].tag = 1;	//离0近标签设置为0，否则设置为1
 		}
 	}
-	/*for (int i = 0; i < size; i++) {
-		cout << pointset[i].x << " " << pointset[i].y << " " << pointset[i].tag << endl;
-	}*/
 }
 
 void Drawing(Point *pointset,int size) {
 	initgraph(640, 480, SHOWCONSOLE);   // 创建图形界面,同时显示控制台窗口		
-	setaspectratio(2, 2);
+	setaspectratio(3, 3);
 	setbkcolor(BLUE);	// 设置背景色为蓝色
 	cleardevice();	// 用背景色清空屏幕
 
 	for (int i = 0; i < size; i++) {
-		putpixel(pointset[i].x, pointset[i].y, BLACK);
-		circle(pointset[i].x, pointset[i].y, 1);
+		if (pointset[i].tag) {
+			setcolor(WHITE);
+			circle(pointset[i].x, pointset[i].y, 1);
+		}
+		else {
+			setcolor(RED);
+			circle(pointset[i].x, pointset[i].y, 1);
+		}
 	}
 	_getch();               // 按任意键继续
 	closegraph();          // 关闭图形界面
 }
 
 int main() {
-	//Point *trainset = ProduceRandom(MAXSIZE);
-	//Cluster(trainset, MAXSIZE);
 	Point *trainset = ProduceRandom(MAXSIZE);
+	Cluster(trainset, MAXSIZE);
 	Drawing(trainset,MAXSIZE);
+	delete[] trainset;
 	return 0;
 }
